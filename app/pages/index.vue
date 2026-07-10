@@ -51,7 +51,7 @@ onMounted(loadGoals)
       <p v-else-if="loadError" style="color: var(--stamp-red)">{{ loadError }}</p>
 
       <template v-else>
-        <p v-if="goals.length === 0" class="muted">
+        <p v-if="goals.length === 0" class="empty-state">
           No goals yet — add your first one above.
         </p>
 

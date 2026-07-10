@@ -35,6 +35,16 @@ async function handleSubmit() {
 
 <template>
   <div class="container" style="max-width: 420px">
+    <div style="display: flex; justify-content: center; margin-bottom: 0.6rem">
+      <svg width="34" height="34" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="3" width="22" height="20" rx="2" stroke="#2f5d4f" stroke-width="1.6"/>
+        <line x1="13" y1="4" x2="13" y2="22" stroke="#2f5d4f" stroke-width="1.6"/>
+        <line x1="5.5" y1="8" x2="10" y2="8" stroke="#b8873a" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="5.5" y1="11.5" x2="10" y2="11.5" stroke="#b8873a" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="16" y1="8" x2="20.5" y2="8" stroke="#b8873a" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="16" y1="11.5" x2="20.5" y2="11.5" stroke="#b8873a" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+    </div>
     <h1 style="text-align: center; margin-bottom: 0.2em">Savings Tracker</h1>
     <p class="muted" style="text-align: center; margin-bottom: 2rem">
       Sign in with a magic link — no password to remember.

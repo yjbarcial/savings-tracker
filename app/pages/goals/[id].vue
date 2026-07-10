@@ -77,22 +77,26 @@ onMounted(loadAll)
       </div>
 
       <div class="card" style="margin-bottom: var(--gap)">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 1rem">
-          <div>
-            <p class="muted" style="margin: 0 0 0.2em">Goal amount</p>
-            <p class="figure" style="margin: 0; font-size: 1.15rem">{{ formatMoney(goal.target_amount) }}</p>
+        <div style="margin-bottom: 1rem">
+          <div class="ledger-row">
+            <span class="ledger-label">Goal amount</span>
+            <span class="ledger-leader"></span>
+            <span class="ledger-value figure">{{ formatMoney(goal.target_amount) }}</span>
           </div>
-          <div>
-            <p class="muted" style="margin: 0 0 0.2em">Amount saved</p>
-            <p class="figure" style="margin: 0; font-size: 1.15rem">{{ formatMoney(goal.amount_saved) }}</p>
+          <div class="ledger-row">
+            <span class="ledger-label">Amount saved</span>
+            <span class="ledger-leader"></span>
+            <span class="ledger-value figure">{{ formatMoney(goal.amount_saved) }}</span>
           </div>
-          <div>
-            <p class="muted" style="margin: 0 0 0.2em">Remaining</p>
-            <p class="figure" style="margin: 0; font-size: 1.15rem">{{ formatMoney(Math.max(goal.remaining, 0)) }}</p>
+          <div class="ledger-row">
+            <span class="ledger-label">Remaining</span>
+            <span class="ledger-leader"></span>
+            <span class="ledger-value figure">{{ formatMoney(Math.max(goal.remaining, 0)) }}</span>
           </div>
-          <div>
-            <p class="muted" style="margin: 0 0 0.2em">Bank</p>
-            <p style="margin: 0; font-size: 1.15rem">{{ goal.bank }}</p>
+          <div class="ledger-row">
+            <span class="ledger-label">Bank</span>
+            <span class="ledger-leader"></span>
+            <span class="ledger-value">{{ goal.bank }}</span>
           </div>
         </div>
 
@@ -113,7 +117,7 @@ onMounted(loadAll)
       <DepositForm :goal-id="goal.id" @added="loadAll" />
 
       <h3 style="margin: var(--gap) 0 0.8rem">Deposit history</h3>
-      <p v-if="deposits.length === 0" class="muted">No deposits yet.</p>
+      <p v-if="deposits.length === 0" class="empty-state">No deposits yet.</p>
       <div v-else style="display: flex; flex-direction: column; gap: 0.6rem">
         <div
           v-for="deposit in deposits"

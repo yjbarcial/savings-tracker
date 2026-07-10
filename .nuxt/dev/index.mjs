@@ -657,7 +657,7 @@ const _inlineRuntimeConfig = {
   "public": {
     "supabase": {
       "url": "https://avbmrmmifaeorskzedkk.supabase.co",
-      "key": "sb_publishable_wGiazB-Q9CzHuO3OFzxB9A_fBXim3Wm",
+      "key": "sb_publishable_8B8ivkHbDs-L8Oai_m-3bA_ViiEzXQ9",
       "redirect": true,
       "redirectOptions": {
         "login": "/login",

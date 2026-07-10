@@ -22,7 +22,11 @@ export interface NewGoalInput {
 }
 
 export function useGoals() {
-  const supabase = useSupabaseClient();
+  // Typed as `any` here because we haven't generated database.types.ts yet
+  // (see README "Generating real types" section). Without it, the Supabase
+  // module defaults to Database = unknown, which makes every table's rows
+  // look like `never` to TypeScript and breaks .insert()/.update() calls.
+  const supabase = useSupabaseClient<any>();
 
   async function listGoals(): Promise<GoalStatus[]> {
     const { data, error } = await supabase

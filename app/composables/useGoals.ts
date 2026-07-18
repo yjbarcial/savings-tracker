@@ -1,6 +1,3 @@
-// Wraps all goal-related Supabase queries in one place.
-// If the schema changes later, this is the only file that should need edits.
-
 export interface GoalStatus {
   id: string;
   user_id: string;
@@ -22,10 +19,6 @@ export interface NewGoalInput {
 }
 
 export function useGoals() {
-  // Typed as `any` here because we haven't generated database.types.ts yet
-  // (see README "Generating real types" section). Without it, the Supabase
-  // module defaults to Database = unknown, which makes every table's rows
-  // look like `never` to TypeScript and breaks .insert()/.update() calls.
   const supabase = useSupabaseClient<any>();
 
   async function listGoals(): Promise<GoalStatus[]> {
@@ -50,9 +43,6 @@ export function useGoals() {
   }
 
   async function createGoal(input: NewGoalInput) {
-    // user_id is filled in automatically by the database (see the
-    // `alter table goals alter column user_id set default auth.uid()`
-    // migration note in the README) — no need to pass it from the client.
     const { data, error } = await supabase
       .from("goals")
       .insert({
@@ -61,6 +51,24 @@ export function useGoals() {
         bank: input.bank,
         start_month: input.start_month,
       })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  // NEW: updates an existing goal's details.
+  async function updateGoal(id: string, input: NewGoalInput) {
+    const { data, error } = await supabase
+      .from("goals")
+      .update({
+        name: input.name,
+        target_amount: input.target_amount,
+        bank: input.bank,
+        start_month: input.start_month,
+      })
+      .eq("id", id)
       .select()
       .single();
 
@@ -81,5 +89,12 @@ export function useGoals() {
     if (error) throw error;
   }
 
-  return { listGoals, getGoal, createGoal, updateGoalStatus, deleteGoal };
+  return {
+    listGoals,
+    getGoal,
+    createGoal,
+    updateGoal,
+    updateGoalStatus,
+    deleteGoal,
+  };
 }

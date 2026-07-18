@@ -13,6 +13,7 @@ const goal = ref<GoalStatus | null>(null)
 const deposits = ref<Deposit[]>([])
 const isLoading = ref(true)
 const loadError = ref('')
+const isEditingGoal = ref(false)
 
 async function loadAll() {
   isLoading.value = true
@@ -35,13 +36,14 @@ function formatMoney(value: number) {
   return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(value)
 }
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
 async function handleMarkComplete() {
   if (!goal.value) return
   await updateGoalStatus(goal.value.id, 'completed')
+  await loadAll()
+}
+
+async function handleGoalUpdated() {
+  isEditingGoal.value = false
   await loadAll()
 }
 
@@ -76,7 +78,15 @@ onMounted(loadAll)
         <span v-if="goal.status === 'completed'" class="stamp">Completed</span>
       </div>
 
-      <div class="card" style="margin-bottom: var(--gap)">
+      <GoalForm
+        v-if="isEditingGoal"
+        :edit-goal="goal"
+        style="margin-bottom: var(--gap)"
+        @updated="handleGoalUpdated"
+        @cancelled="isEditingGoal = false"
+      />
+
+      <div v-else class="card" style="margin-bottom: var(--gap)">
         <div style="margin-bottom: 1rem">
           <div class="ledger-row">
             <span class="ledger-label">Goal amount</span>
@@ -102,7 +112,8 @@ onMounted(loadAll)
 
         <ProgressBar :saved="goal.amount_saved" :target="goal.target_amount" />
 
-        <div style="display: flex; gap: 0.6rem; margin-top: 1.2rem">
+        <div style="display: flex; gap: 0.6rem; margin-top: 1.2rem; flex-wrap: wrap">
+          <button class="btn btn-ghost" @click="isEditingGoal = true">Edit goal</button>
           <button
             v-if="goal.status !== 'completed'"
             class="btn btn-ghost"
@@ -119,22 +130,13 @@ onMounted(loadAll)
       <h3 style="margin: var(--gap) 0 0.8rem">Deposit history</h3>
       <p v-if="deposits.length === 0" class="empty-state">No deposits yet.</p>
       <div v-else style="display: flex; flex-direction: column; gap: 0.6rem">
-        <div
+        <DepositRow
           v-for="deposit in deposits"
           :key="deposit.id"
-          class="card"
-          style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1rem"
-        >
-          <div>
-            <p class="figure" style="margin: 0">{{ formatMoney(deposit.amount) }}</p>
-            <p class="muted" style="margin: 0">
-              {{ formatDate(deposit.deposited_at) }}<span v-if="deposit.note"> · {{ deposit.note }}</span>
-            </p>
-          </div>
-          <button class="btn-ghost btn" style="border: none; padding: 0.3em 0.6em" @click="handleDeleteDeposit(deposit.id)">
-            Remove
-          </button>
-        </div>
+          :deposit="deposit"
+          @changed="loadAll"
+          @request-delete="handleDeleteDeposit"
+        />
       </div>
     </template>
   </div>

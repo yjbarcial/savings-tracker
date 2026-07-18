@@ -47,18 +47,27 @@ async function handleGoalUpdated() {
   await loadAll()
 }
 
-async function handleDeleteGoal() {
+// --- Delete goal, via ConfirmDialog instead of browser confirm() ---
+const showDeleteGoalConfirm = ref(false)
+
+async function confirmDeleteGoal() {
+  showDeleteGoalConfirm.value = false
   if (!goal.value) return
-  const confirmed = confirm(`Delete "${goal.value.name}"? This also removes its deposit history.`)
-  if (!confirmed) return
   await deleteGoal(goal.value.id)
   router.push('/')
 }
 
-async function handleDeleteDeposit(id: string) {
-  const confirmed = confirm('Remove this deposit?')
-  if (!confirmed) return
-  await deleteDeposit(id)
+// --- Delete deposit, via ConfirmDialog instead of browser confirm() ---
+const pendingDeleteDepositId = ref<string | null>(null)
+
+function requestDeleteDeposit(id: string) {
+  pendingDeleteDepositId.value = id
+}
+
+async function confirmDeleteDeposit() {
+  if (!pendingDeleteDepositId.value) return
+  await deleteDeposit(pendingDeleteDepositId.value)
+  pendingDeleteDepositId.value = null
   await loadAll()
 }
 
@@ -121,7 +130,7 @@ onMounted(loadAll)
           >
             Mark as completed
           </button>
-          <button class="btn btn-danger" @click="handleDeleteGoal">Delete goal</button>
+          <button class="btn btn-danger" @click="showDeleteGoalConfirm = true">Delete goal</button>
         </div>
       </div>
 
@@ -135,9 +144,29 @@ onMounted(loadAll)
           :key="deposit.id"
           :deposit="deposit"
           @changed="loadAll"
-          @request-delete="handleDeleteDeposit"
+          @request-delete="requestDeleteDeposit"
         />
       </div>
     </template>
+
+    <ConfirmDialog
+      :open="showDeleteGoalConfirm"
+      title="Delete this goal?"
+      :message="`Delete '${goal?.name}'? This also removes its deposit history. This can't be undone.`"
+      confirm-label="Delete goal"
+      danger
+      @confirm="confirmDeleteGoal"
+      @cancel="showDeleteGoalConfirm = false"
+    />
+
+    <ConfirmDialog
+      :open="!!pendingDeleteDepositId"
+      title="Remove this deposit?"
+      message="This will remove the deposit and update the goal's saved total. This can't be undone."
+      confirm-label="Remove"
+      danger
+      @confirm="confirmDeleteDeposit"
+      @cancel="pendingDeleteDepositId = null"
+    />
   </div>
 </template>
